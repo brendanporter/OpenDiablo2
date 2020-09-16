@@ -16,11 +16,57 @@ type inputManager struct {
 	buttonMod d2enum.MouseButtonMod
 	keyMod    d2enum.KeyMod
 
-	entries handlerEntryList
+	entries  handlerEntryList
+	eventBus chan UserEvent
+}
+
+type UserEvent struct {
+	Target   string
+	IsLClick bool
+	IsRClick bool
+	IsKey    bool
+	Key      string
+	X        int
+	Y        int
+}
+
+type eventBus struct {
+	Name string
+	r    <-chan UserEvent // Event Consumers
+	w    chan<- UserEvent // Event Emitters
+}
+
+func AddEventSubscriber(event UserEvent) {
+	newSubscribersChan <- UserEvent{}
+}
+
+var subscribers []eventBus
+var newSubscribersChan chan<- chan UserEvent
+
+func AddSubscriber(newSub chan<- UserEvent) {
+	newSubscribersChan <- newSub
+}
+
+func eventProcessor() {
+	newSubscribersChan = make(chan chan<- UserEvent, 10)
+	for {
+		select {
+		case e := <-eventBus:
+			// Handle input, dispatch to subscribers
+			for _, s := range subscribers {
+				// conditional logic?
+				s.r <- e
+			}
+		case newSubscriber := <-newSubscribersChan:
+			subscribers = append(subscribers, newSubscriber)
+		}
+	}
 }
 
 // NewInputManager returns a new input manager instance
 func NewInputManager() d2interface.InputManager {
+	eventBus := make(chan UserEvent, 10)
+	go eventProcessor(eventBus)
 	return &inputManager{
 		inputService: ebiten_input.InputService{},
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/OpenDiablo2/OpenDiablo2/d2app"
@@ -24,6 +25,10 @@ var GitCommit string
 func main() {
 	log.SetFlags(log.Lshortfile)
 	log.Println("OpenDiablo2 - Open source Diablo 2 engine")
+
+	var debug bool
+
+	flag.BoolVar(&debug, "debug", false, "use to trigger debug action")
 
 	if err := d2config.Load(); err != nil {
 		panic(err)
