@@ -199,6 +199,8 @@ func (s *ebitenSurface) handleStateEffect(opts *ebiten.DrawImageOptions) {
 	case d2enum.DrawEffectMod2X:
 	case d2enum.DrawEffectNone:
 		opts.CompositeMode = ebiten.CompositeModeSourceOver
+	case d2enum.DrawEffectSubtract:
+		opts.CompositeMode = ebiten.CompositeModeDestinationOver
 	}
 }
 

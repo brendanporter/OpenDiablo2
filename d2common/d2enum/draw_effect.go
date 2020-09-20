@@ -39,6 +39,9 @@ const (
 
 	// no effect
 	DrawEffectNone
+
+	// subtract
+	DrawEffectSubtract
 )
 
 // Transparent returns true if there is no effect, false otherwise
